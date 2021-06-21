@@ -86,6 +86,38 @@ public class JDBMConnect {
         }
         return temparray;
     }
+    public double salaryManipulation(int option,char gender){
+        String operation = "";
+        switch (option){
+            case 1:
+                operation = "sum";
+                break;
+            case 2:
+                operation = "avg";
+                break;
+            case 3:
+                operation = "min";
+                break;
+            case 4:
+                operation = "max";
+                break;
+            case 5:
+                operation = "count";
+                break;
+        }
+        System.out.println(operation);
+        try {
+            String sql = String.format("select %s(basic_pay) as %s from payroll,employee where payroll.employee_id = employee.id and employee.gender = '%c';",operation,operation,gender);
+            System.out.println(sql);
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            System.out.println(resultSet.next());
+            return resultSet.getDouble(operation);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return 0;
+    }
 
     public void printPayroll() {
         payrollArrayList.stream().forEach(payroll -> System.out.println(payroll.toString()));

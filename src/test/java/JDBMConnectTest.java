@@ -26,4 +26,11 @@ class JDBMConnectTest {
         Assertions.assertEquals(1,employees.stream().count());
     }
 
+    @Test
+    void givenOperationAs_MIN_AndGenderShouldReturnMinSalary() {
+        JDBMConnect jdbmConnect = new JDBMConnect();
+        jdbmConnect.updateList();
+        Assertions.assertEquals(30000.0,jdbmConnect.salaryManipulation(3,'M'));
+
+    }
 }
