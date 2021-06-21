@@ -20,4 +20,11 @@ public class Payroll {
         this.basic_pay = basic_pay;
     }
 
+    @Override
+    public String toString() {
+        return "Payroll{" +
+                "employee_id=" + employee_id +
+                ", basic_pay=" + basic_pay +
+                '}';
+    }
 }

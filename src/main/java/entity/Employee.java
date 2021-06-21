@@ -57,4 +57,16 @@ public class Employee {
     public void setStart_date(Date start_date) {
         this.start_date = start_date;
     }
+
+    @Override
+    public String toString() {
+        return "Employee{" +
+                "id=" + id +
+                ", employee_name='" + employee_name + '\'' +
+                ", gender='" + gender + '\'' +
+                ", address='" + address + '\'' +
+                ", phone_number=" + phone_number +
+                ", start_date=" + start_date.toString() +
+                '}';
+    }
 }

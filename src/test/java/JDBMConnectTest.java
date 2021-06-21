@@ -1,16 +1,29 @@
+import entity.Employee;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class JDBMConnectTest {
     @Test
-    void connectionTest() throws SQLException {
+    void givenValueAndNameUpdatesBasicpay_AndReturnsAcknowledgement() throws SQLException {
         JDBMConnect jdbmConnect = new JDBMConnect();
         jdbmConnect.updateList();
-
-        Assertions.assertEquals(1,jdbmConnect.updatePay(4000, jdbmConnect.searchIdByName("terisa")));
+        Assertions.assertEquals(1,
+                jdbmConnect.updatePay(4000, jdbmConnect.searchIdByName("terisa")));
+        jdbmConnect.printPayroll();
     }
+
+    @Test
+    void givenDateRangeReturnsNumberOfEntriesWhoJoinedInGivenRange() throws SQLException {
+        JDBMConnect jdbmConnect = new JDBMConnect();
+        jdbmConnect.updateList();
+        ArrayList<Employee> employees = jdbmConnect.toRetrieveEmployeeInDateRange("2018-08-02", "2020-08-02");
+        employees.forEach(employee -> System.out.println(employee.toString()));
+        Assertions.assertEquals(1,employees.stream().count());
+    }
+
 }
