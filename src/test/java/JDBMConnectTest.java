@@ -39,7 +39,6 @@ class JDBMConnectTest {
     @Test
     void givenEmployeeDetils_ShouldAddTheDetailsToTheDB() {
         JDBMConnect jdbmConnect = new JDBMConnect();
-        jdbmConnect.updateList();
         Employee employee = new Employee();
         employee.setEmployee_name("ram");
         employee.setGender("M");
@@ -48,5 +47,11 @@ class JDBMConnectTest {
         payroll.setBasic_pay(40000);
         payroll.setRemainingParameters();
         Assertions.assertTrue(jdbmConnect.insertIntoDB(employee,payroll));
+    }
+
+    @Test
+    void givenEmployeeId_ShoulDeletesEntryFromAllTheTables() {
+        JDBMConnect jdbmConnect = new JDBMConnect();
+        Assertions.assertTrue(jdbmConnect.deleteFromDB(20));
     }
 }

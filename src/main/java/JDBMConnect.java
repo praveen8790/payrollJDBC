@@ -109,16 +109,15 @@ public class JDBMConnect {
             Savepoint beforeInsertion = connection.setSavepoint();
 
             try {
-                String sql_emp = String.format("insert into employee(employee_name,gender,start_date) values (%s);"
-                        ,employee.toString());
-                connection.prepareStatement(sql_emp).execute();
+                connection.prepareStatement(String.format("insert into employee(employee_name,gender,start_date) values (%s);"
+                        ,employee.toString())).execute();
                 ResultSet resultSet=connection.prepareStatement(String.format("select distinct greatest(employee.id , payroll.employee_id) as dis from payroll,employee where employee.employee_name = \"%s\";"
                         , employee.getEmployee_name())).executeQuery();
                 if(resultSet.next())
                     payroll.setEmployee_id(resultSet.getInt("dis"));
-                String sql_payroll= String.format("insert into payroll(employee_id,basic_pay,deductions,taxable_pay,tax,net_pay) values (%s);",
-                        payroll);
-                connection.prepareStatement(sql_payroll).execute();
+                connection.prepareStatement(String.format(
+                        "insert into payroll(employee_id,basic_pay,deductions,taxable_pay,tax,net_pay) values (%s);",
+                        payroll)).execute();
                 connection.commit();
                 return true;
             } catch (SQLException throwables) {
@@ -128,7 +127,26 @@ public class JDBMConnect {
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
+        }
+        return false;
+    }
+    public boolean deleteFromDB(int id){
+        try {
+            connection.setAutoCommit(false);
+            Savepoint beforeDeletion = connection.setSavepoint();
+            try {
+                connection.prepareStatement(String.format(
+                        "delete from employee where id = %d;", id
+                )).execute();
+                connection.commit();
+                return true;
+            } catch (SQLException throwables) {
+                connection.rollback(beforeDeletion);
+                throwables.printStackTrace();
+            }
 
+        }catch (SQLException throwables) {
+            throwables.printStackTrace();
         }
         return false;
     }
