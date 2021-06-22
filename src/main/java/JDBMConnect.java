@@ -33,8 +33,6 @@ public class JDBMConnect {
                 employee.setId(resultSet.getInt("id"));
                 employee.setEmployee_name(resultSet.getString("employee_name"));
                 employee.setGender(resultSet.getString("gender"));
-                employee.setAddress(resultSet.getString("address"));
-                employee.setPhone_number(resultSet.getLong("phone_number"));
                 employee.setStart_date(resultSet.getDate("start_date"));
                 employeeArrayList.add(employee);
             }
@@ -79,40 +77,21 @@ public class JDBMConnect {
             employee.setId(resultSet.getInt("id"));
             employee.setEmployee_name(resultSet.getString("employee_name"));
             employee.setGender(resultSet.getString("gender"));
-            employee.setAddress(resultSet.getString("address"));
-            employee.setPhone_number(resultSet.getLong("phone_number"));
             employee.setStart_date(resultSet.getDate("start_date"));
             temparray.add(employee);
         }
         return temparray;
     }
     public double salaryManipulation(int option,char gender){
-        String operation = "";
-        switch (option){
-            case 1:
-                operation = "sum";
-                break;
-            case 2:
-                operation = "avg";
-                break;
-            case 3:
-                operation = "min";
-                break;
-            case 4:
-                operation = "max";
-                break;
-            case 5:
-                operation = "count";
-                break;
-        }
+        String[] operation = {"sum","avg","min","max","count"};
         System.out.println(operation);
         try {
-            String sql = String.format("select %s(basic_pay) as %s from payroll,employee where payroll.employee_id = employee.id and employee.gender = '%c';",operation,operation,gender);
+            String sql = String.format("select %s(basic_pay) as %s from payroll,employee where payroll.employee_id = employee.id and employee.gender = '%c';",operation[option-1],operation[option-1],gender);
             System.out.println(sql);
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             ResultSet resultSet = preparedStatement.executeQuery();
             System.out.println(resultSet.next());
-            return resultSet.getDouble(operation);
+            return resultSet.getDouble(operation[option-1]);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -120,6 +99,19 @@ public class JDBMConnect {
     }
 
     public void printPayroll() {
-        payrollArrayList.stream().forEach(payroll -> System.out.println(payroll.toString()));
+        employeeArrayList.stream().forEach(payroll -> System.out.println(payroll.toString()));
+    }
+
+
+    public boolean insertIntoDB(Employee employee){
+        try {
+            String sql = String.format("insert into employee(employee_name,gender,start_date) values (%s)",employee.toString());
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            return preparedStatement.execute();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return false;
+        }
+
     }
 }
