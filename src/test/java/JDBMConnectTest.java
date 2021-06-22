@@ -1,4 +1,5 @@
 import entity.Employee;
+import entity.Payroll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -40,10 +41,12 @@ class JDBMConnectTest {
         JDBMConnect jdbmConnect = new JDBMConnect();
         jdbmConnect.updateList();
         Employee employee = new Employee();
-        employee.setEmployee_name("tarak");
+        employee.setEmployee_name("ram");
         employee.setGender("M");
         employee.setStart_date(Date.valueOf("2021-05-04"));
-        Assertions.assertTrue(jdbmConnect.insertIntoDB(employee));
-
+        Payroll payroll = new Payroll();
+        payroll.setBasic_pay(40000);
+        payroll.setRemainingParameters();
+        Assertions.assertTrue(jdbmConnect.insertIntoDB(employee,payroll));
     }
 }

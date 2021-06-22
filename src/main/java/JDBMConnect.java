@@ -99,19 +99,37 @@ public class JDBMConnect {
     }
 
     public void printPayroll() {
-        employeeArrayList.stream().forEach(payroll -> System.out.println(payroll.toString()));
+        payrollArrayList.stream().forEach(payroll -> System.out.println(payroll.toString()));
     }
 
 
-    public boolean insertIntoDB(Employee employee){
+    public boolean insertIntoDB(Employee employee,Payroll payroll){
         try {
-            String sql = String.format("insert into employee(employee_name,gender,start_date) values (%s)",employee.toString());
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            return preparedStatement.execute();
+            connection.setAutoCommit(false);
+            Savepoint beforeInsertion = connection.setSavepoint();
+
+            try {
+                String sql_emp = String.format("insert into employee(employee_name,gender,start_date) values (%s);"
+                        ,employee.toString());
+                connection.prepareStatement(sql_emp).execute();
+                ResultSet resultSet=connection.prepareStatement(String.format("select distinct greatest(employee.id , payroll.employee_id) as dis from payroll,employee where employee.employee_name = \"%s\";"
+                        , employee.getEmployee_name())).executeQuery();
+                if(resultSet.next())
+                    payroll.setEmployee_id(resultSet.getInt("dis"));
+                String sql_payroll= String.format("insert into payroll(employee_id,basic_pay,deductions,taxable_pay,tax,net_pay) values (%s);",
+                        payroll);
+                connection.prepareStatement(sql_payroll).execute();
+                connection.commit();
+                return true;
+            } catch (SQLException throwables) {
+                connection.rollback(beforeInsertion);
+                throwables.printStackTrace();
+                return false;
+            }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
-            return false;
-        }
 
+        }
+        return false;
     }
 }
