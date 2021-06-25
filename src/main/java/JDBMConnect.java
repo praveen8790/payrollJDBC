@@ -2,7 +2,7 @@ import entity.Employee;
 import entity.Payroll;
 
 import java.sql.*;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class JDBMConnect {
@@ -118,6 +118,8 @@ public class JDBMConnect {
                 connection.prepareStatement(String.format(
                         "insert into payroll(employee_id,basic_pay,deductions,taxable_pay,tax,net_pay) values (%s);",
                         payroll)).execute();
+                payroll.setRemainingParameters();
+                this.updateList();
                 connection.commit();
                 return true;
             } catch (SQLException throwables) {
@@ -149,5 +151,28 @@ public class JDBMConnect {
             throwables.printStackTrace();
         }
         return false;
+    }
+    public int multipleEmployees(List<Employee> employees,List<Payroll> payrolls){
+        Iterator iterator =employees.listIterator();
+        Map<Integer, Boolean> employAdditionStatus = new HashMap<>();
+        while(iterator.hasNext()){
+            int i = (int) iterator.next();
+            Runnable task = () ->{
+                employAdditionStatus.put(employees.get(i).hashCode(), false);
+                this.insertIntoDB(employees.get(i), payrolls.get(i));
+                employAdditionStatus.put(employees.get(i).hashCode(), true);
+
+            };
+            Thread thread = new Thread(task);
+            thread.start();
+        }
+        while (employAdditionStatus.containsValue(false)) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        return employeeArrayList.size();
     }
 }

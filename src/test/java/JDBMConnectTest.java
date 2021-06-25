@@ -5,7 +5,9 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.Date;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -48,10 +50,24 @@ class JDBMConnectTest {
         payroll.setRemainingParameters();
         Assertions.assertTrue(jdbmConnect.insertIntoDB(employee,payroll));
     }
-
     @Test
     void givenEmployeeId_ShoulDeletesEntryFromAllTheTables() {
         JDBMConnect jdbmConnect = new JDBMConnect();
         Assertions.assertTrue(jdbmConnect.deleteFromDB(20));
+    }
+
+
+    @Test
+    void givenMultipleEmployeeData_shouldAddIntoDBWithMulitThreading() {
+        JDBMConnect jdbmConnect =  new JDBMConnect();
+        Employee[] employees = new Employee[3];
+        Payroll[] payrolls = new Payroll[3];
+        employees[1].add("jeff","M", Date.valueOf(LocalDate.now()));
+        payrolls[1].setBasic_pay(3000);
+        employees[1].add("bezos","M", Date.valueOf(LocalDate.now()));
+        payrolls[1].setBasic_pay(3000);
+        employees[1].add("grandey","M", Date.valueOf(LocalDate.now()));
+        payrolls[1].setBasic_pay(3000);
+        Assertions.assertEquals(8,jdbmConnect.multipleEmployees(Arrays.asList(employees),Arrays.asList(payrolls)));
     }
 }
